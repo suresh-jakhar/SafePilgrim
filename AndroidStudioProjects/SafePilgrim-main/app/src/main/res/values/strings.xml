@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">SP</string>
+    <string name="google_maps_key">AIzaSyCX4P0CgM1fvGL453kTTWCb-EOJ6UiRhaI</string>
+    
+    <string name="open_map">Open Map</string>
+    <string name="panic">Panic</string>
+    <string name="safety_score">Safety Score</string>
+    <string name="geofence">GeoFence</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SP</string>
+    <string name="google_maps_key">AIzaSyCX4P0CgM1fvGL453kTTWCb-EOJ6UiRhaI</string>
+    <string name="open_map">मानचित्र खोलें</string>
+    <string name="panic">संकट</string>
+    <string name="safety_score">सुरक्षा स्कोर</string>
+    <string name="geofence">जियोफेंस</string>
+</resources>
+
