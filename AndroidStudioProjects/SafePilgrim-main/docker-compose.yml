@@ -1,0 +1,140 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - digital-id-service
+      - emergency-service
+      - geofencing-service
+      - ai-analytics-service
+    networks:
+      - safepilgrim-network
+
+  # Digital ID Service
+  digital-id-service:
+    build:
+      context: ./backend/digital-id-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/safepilgrim_digitalid
+      - DATABASE_USERNAME=safepilgrim
+      - DATABASE_PASSWORD=safepilgrim123
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - safepilgrim-network
+
+  # Emergency Service
+  emergency-service:
+    build:
+      context: ./backend/emergency-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/safepilgrim_emergency
+      - DATABASE_USERNAME=safepilgrim
+      - DATABASE_PASSWORD=safepilgrim123
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - safepilgrim-network
+
+  # Geofencing Service
+  geofencing-service:
+    build:
+      context: ./backend/geofencing-service
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/safepilgrim_geofencing
+      - DATABASE_USERNAME=safepilgrim
+      - DATABASE_PASSWORD=safepilgrim123
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - safepilgrim-network
+
+  # AI Analytics Service
+  ai-analytics-service:
+    build:
+      context: ./backend/ai-analytics-service
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/safepilgrim_analytics
+      - DATABASE_USERNAME=safepilgrim
+      - DATABASE_PASSWORD=safepilgrim123
+      - REDIS_URL=redis://redis:6379
+      - TENSORFLOW_SERVING_URL=http://tensorflow-serving:8500
+    depends_on:
+      - postgres
+      - redis
+      - tensorflow-serving
+    networks:
+      - safepilgrim-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=safepilgrim
+      - POSTGRES_USER=safepilgrim
+      - POSTGRES_PASSWORD=safepilgrim123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - safepilgrim-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - safepilgrim-network
+
+  # TensorFlow Serving for AI Models
+  tensorflow-serving:
+    image: tensorflow/serving:latest
+    ports:
+      - "8500:8500"
+      - "8501:8501"
+    volumes:
+      - ./models:/models
+    command: --model_config_file=/models/models.config
+    networks:
+      - safepilgrim-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  safepilgrim-network:
+    driver: bridge

@@ -1,9 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.hilt)
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
+    // alias(libs.plugins.hilt) // Temporarily disabled until API layer is restored
 }
 
 android {
@@ -18,6 +17,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // NEW: API Configuration
+        buildConfigField("String", "API_BASE_URL", "\"http://localhost:8080\"")
     }
 
     buildTypes {
@@ -46,6 +48,11 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+    
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     
     // Configure packaging options for 16 KB alignment
@@ -93,7 +100,7 @@ dependencies {
     // Phase 1: Digital ID & Blockchain
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    // ksp(libs.androidx.room.compiler) // Temporarily disabled
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
     implementation(libs.gson)
@@ -101,15 +108,22 @@ dependencies {
     implementation(libs.zxing.core)
     implementation(libs.zxing.android)
     
-    // Phase 2: AI/ML & Enhanced Features (simplified for build stability)
-    // implementation(libs.tensorflow.lite)
-    // implementation(libs.tensorflow.lite.support)
-    // implementation(libs.mlkit.text.recognition)
-    // implementation(libs.mlkit.face.detection)
+    // Phase 2: AI/ML & Enhanced Features
     implementation(libs.androidx.work.runtime)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
+    // implementation(libs.hilt.android) // Temporarily disabled until API layer is restored
+    // ksp(libs.hilt.compiler) // Temporarily disabled until API layer is restored
+    // implementation(libs.hilt.navigation.compose) // Temporarily disabled until API layer is restored
+    
+    // NEW: Network & API Communication
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.retrofit.moshi)
+    implementation(libs.moshi)
+    // ksp(libs.moshi.codegen) // Temporarily disabled
+    implementation(libs.security.crypto)
+    
+    // NEW: Network State Management
+    implementation("androidx.lifecycle:lifecycle-process:2.7.0")
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

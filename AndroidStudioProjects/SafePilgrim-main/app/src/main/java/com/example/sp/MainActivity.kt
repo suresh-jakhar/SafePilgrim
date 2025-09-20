@@ -45,7 +45,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.runtime.remember
-import com.example.sp.ui.theme.SPTheme
+import com.example.sp.ui.theme.SafePilgrimTheme
 import com.example.sp.location.LocationService
 import com.example.sp.panic.PanicScreen
 import com.example.sp.safety.SafetyScreen
@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
         // Initialize Digital ID Manager
         digitalIDManager = DigitalIDManager(this)
         setContent {
-            SPTheme {
+            SafePilgrimTheme {
                 val navController = rememberNavController()
                 val backStackEntry = navController.currentBackStackEntryAsState()
                 val currentRoute = backStackEntry.value?.destination?.route ?: "home"
@@ -144,13 +144,13 @@ class MainActivity : ComponentActivity() {
                         )
                         }
                         composable("map") {
-                            val app = application as SPApp
-                            LiveLocationMapScreen(locationFlow = app.container.locationService.locationUpdates())
+                            // TODO: Restore location service when API layer is added back
+                            LiveLocationMapScreen(locationFlow = kotlinx.coroutines.flow.flowOf())
                         }
                         composable("panic") {
-                            val app = application as SPApp
+                            // TODO: Restore location service when API layer is added back
                             PanicScreen(
-                                locationFlow = app.container.locationService.locationUpdates(),
+                                locationFlow = kotlinx.coroutines.flow.flowOf(),
                                 onRecordingFinished = { file, location ->
                                     navController.popBackStack()
                                 },
@@ -164,11 +164,11 @@ class MainActivity : ComponentActivity() {
                             EnhancedSafetyScreen(onBack = { navController.popBackStack() })
                         }
                         composable("geofence") {
-                            val app = application as SPApp
                             val manager = remember { GeofenceManager(this@MainActivity) }
+                            // TODO: Restore location service when API layer is added back
                             GeoFenceScreen(
                                 geofenceManager = manager,
-                                locationFlow = app.container.locationService.locationUpdates(),
+                                locationFlow = kotlinx.coroutines.flow.flowOf(),
                                 onBack = { navController.popBackStack() }
                             )
                         }
@@ -323,7 +323,7 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    SPTheme {
+    SafePilgrimTheme {
         HomeScreen()
     }
 }

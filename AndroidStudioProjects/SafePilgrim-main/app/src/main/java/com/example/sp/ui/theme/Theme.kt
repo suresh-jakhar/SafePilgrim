@@ -9,30 +9,28 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Azure,
-    secondary = Teal,
-    tertiary = Amber,
-    background = Color(0xFF0B1220),
-    surface = Color(0xFF101827)
+    primary = Purple80,
+    secondary = PurpleGrey80,
+    tertiary = Pink80
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Azure,
-    secondary = Teal,
-    tertiary = Amber,
-    background = Color(0xFFF8FAFC),
-    surface = Color(0xFFFFFFFF)
+    primary = Purple40,
+    secondary = PurpleGrey40,
+    tertiary = Pink40
 )
 
 @Composable
-fun SPTheme(
+fun SafePilgrimTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Use our vibrant custom colors for a consistent brand feel
-    dynamicColor: Boolean = false,
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -43,6 +41,14 @@ fun SPTheme(
 
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
+    }
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+        }
     }
 
     MaterialTheme(
